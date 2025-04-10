@@ -1,0 +1,41 @@
+package ui
+
+templ Div(id string, attrs templ.Attributes) {
+   <div id={id} {attrs...}>
+   {children...}
+   </div> 
+}
+
+templ Section(id, class string, attrs templ.Attributes) {
+    <section id={id} class={class} {attrs...} >
+      <a href="/pooling" style="color: white; font-weight: bold;">pooling example</a>
+    </section>
+}
+
+templ Wrapper(id, class string, attrs templ.Attributes){
+    <section id={id} class={class} {attrs...} >
+        {children...}
+    </section>
+}
+
+
+templ layout() {
+   <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/public/img/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="/public/css/style.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.10/bundles/datastar.js"></script>
+    <title>Datastart Tutotarial</title>
+  </head>
+  <body class="body">
+    <div class="layout">
+        <main class="main">
+            {children...}
+        </main>
+    </div>
+  </body>
+</html>
+}

@@ -1,0 +1,233 @@
+package ui 
+
+import "time"
+import "fmt"
+import "datastar-reactive/internal/data"
+
+// # =====================================================================================
+// # DISABLE BUTTON
+// # =====================================================================================
+
+templ DisableButtonAppender(time string) {
+   <div id="timestamp">
+    <div>Update successful. The time of conclusion is {time} </div>
+   </div> 
+}
+
+templ DisableButton() {
+    @layout(){
+        <h1>Disable Button</h1>
+        <p>Shows an example on how to disable a button, then waiting for the server to re-enable it </p>
+        <div id="container" class="container">
+
+            //creates a new signal of bool type
+          <div data-signals="{shouldDisable: false}">
+              // when clicked, sets the signal to true; Then sends a request to the server to flip the signal back
+              // control the disabled attribute via the signal button 
+               <button id="target" class="button" data-attr-disabled="$shouldDisable" data-on-click="$shouldDisable = true; @get('/disable-button/data')">Click To Disabled</button>
+          </div> 
+        </div>
+    }
+}
+
+
+// # =====================================================================================
+// # MODEL BIND
+// # =====================================================================================
+
+templ ModelBind() {
+    @layout(){
+        <h1>Model Bind</h1>
+        <p>Shows how to bind signals to input fields</p>
+        <p>Creates a two way bind</p>
+        <div class="container">
+        // define a div that contains the signals
+          <div id="binder" data-signals="{text:'foo', number:42, bool:true, selection:1}" style="display: grid; grid-auto-flow: row; gap:1rem">
+          // bind a signal to each input
+           <input type="text" data-bind-text />
+           <input type="number" data-bind-number />
+           <textarea data-bind-text></textarea>
+           <label>
+             <span>Checkbox</span>
+             <input type="checkbox" data-bind-bool />
+           </label>
+           <select data-bind-selection>
+             <option value="1"> Option 1</option>
+             <option value="2"> Option 2</option>
+             <option value="3"> Option 3</option>
+           </select>
+           <label>
+             <input type="radio" data-bind-selection value="1"/>
+             <span>Option 1</span>
+           </label>
+
+           <label>
+             <input type="radio" data-bind-selection value="2"/>
+             <span>Option 2</span>
+           </label>
+
+           <label>
+             <input type="radio" data-bind-selection value="3"/>
+             <span>Option 3</span>
+           </label>
+            
+            <code>
+             <pre data-text="ctx.signals.JSON()"></pre>
+            </code>
+          </div>
+        </div>
+    }
+}
+
+// # =====================================================================================
+// # ON LOAD 
+// # =====================================================================================
+templ OnLoadReplacer(sessionKey string, sessionValues *data.SessionMap) {
+    <div id="replaceMe" class="outlined">
+        Loaded at { time.Now().Format(time.RFC3339) }
+        <div>Session name: { sessionKey }</div>
+        <div>Session contents: { fmt.Sprintf("%+v",sessionValues) }</div>
+    </div>
+}
+// component accpets 2 params, which are supplied by the server on load
+templ OnLoad() {
+    @layout(){
+        <h1>On Load</h1>
+        <div class="container">
+            <p>Used to specify a fetch request that should be made when the element that has the signal loads.j</p>
+            // send a get request after 3 seconds on loading
+            <div id="replaceMe" class="outlined" data-on-load__delay.3s="@get('/onload/data')">
+                 Waiting for data ...
+            </div>
+    </div>
+    }
+}
+
+// # =====================================================================================
+// # CLASSES
+// # =====================================================================================
+
+templ ToggleClasses() {
+    @layout(){
+        <h1>Toggle Classes </h1>
+        <p>We can use the <code>data-on-raf></code> to ran an expression on every RequestAnimationFrame event</p>
+        <div class="container">
+        // define the signal 'count' with initial value of 0
+        // define a computed signal 'blinker' with has a boolean value 
+        // Put a throttle of 500ms to limit the refresh of only 1/2 second. Other wise the refresh runs at 60fps
+          <div data-signals="{count:0}" data-on-raf__throttle.500ms="$count++" data-computed-blinker="$count %2 === 0" >
+          // bind the textContent property of the DIV to the value of $count 
+           <div data-text="$count"></div>
+           // add the classes 'yellow-text' and 'bold-text' if the value is $blinkder is true
+           <div data-class="{'yellow-text':$blinker, 'bold-text':$blinker}">Remake Blink Tag</div>
+          </div>
+        </div>
+    }
+}
+
+// # =====================================================================================
+// # BIND KEYS
+// # =====================================================================================
+
+templ BindKeys() {
+    @layout(){
+        <h1>Bind Keys</h1>
+        <p>teUse the <code>data-on-keydown</code> attribute to bind keys </p>
+        <div class="container">
+          <h3 data-on-keydown__window="evt.ctrlKey && evt.key=='k' && alert('you pressed CTR+K')">Press Cntr+K</h3>
+          <h3 data-on-keydown__window="evt.key=='Enter' && alert('you pressed CTR+ENTER')">Press Cntr+Enter</h3>
+        </div>
+    }
+}
+
+
+// # =====================================================================================
+// # IGNORE ATTRIBUTES 
+// # =====================================================================================
+templ Ignore() {
+    @layout(){
+        <h1>Ignore Signals</h1>
+        <p>Allows us to add a attribute that prevents the element from being processed by datastar</p>
+        <div class="container">
+             <div data-signals-foo="'A valid signal'">
+             // the '__self' limits the ignore to the this element
+             <div data-star-ignore__self data-text="$notASignal">
+             // with '__self' present on the paranent, childre are unaffected
+                <div data-text="$foo"></div>
+             </div>
+            </div>        
+        </div>
+    }
+}
+
+// # =====================================================================================
+// # POOLING
+// # =====================================================================================
+
+templ PoolingInterval() {
+    // starts a pooling inverval of 1 second 
+    //adding leading to the __duration modifier executes the first interval immediately.
+<div id="pooling-interval" data-on-interval__duration.1s.leading="@get('/pooling/data')">
+  Count: <span data-text="$count"></span>
+</div>
+}
+
+templ PoolingDelay() {
+    // starts a pooling inverval of 1 second 
+    //
+<div id="pooling-delay" data-on-load__delay.1s="@get('/pooling/data')">
+  Count: <span data-text="$count"></span>
+</div>
+}
+
+templ Pooling() {
+    @layout(){
+        <h1>Pooling</h1>
+        // defines the singal 'count'
+        <div class="container" data-signals-count="0">
+
+            // INFO: OPTION #1 
+            @PoolingInterval()
+            <hr />
+
+            // INFO: OPTION #2
+            <!-- @PoolingDelay() -->
+        </div>
+    }
+
+}
+
+// # =====================================================================================
+// # HOME 
+// # =====================================================================================
+templ Page(title string) {
+    @layout(){
+        <h1>Reactive Examples</h1>
+        <h3>{title}</h3>
+        <div class="container">
+        <ul>
+          <li>
+             <a href="/pooling">pooling</a>
+          </li>
+          <li>
+             <a href="/ignore">ignore</a>
+          </li>
+          <li>
+             <a href="/bind-keys">bind-keys</a>
+          </li>
+          <li>
+             <a href="/classes">classes</a>
+          </li>
+          <li>
+             <a href="/onload">onload</a>
+          </li>
+          <li>
+             <a href="/model-bind">mode-bind</a>
+          </li>
+          <li>
+             <a href="/disable-button">disable-button</a>
+          </li>
+        </ul>
+    </div>
+    }
+}

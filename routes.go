@@ -42,7 +42,7 @@ func (app *application) pooling(w http.ResponseWriter, r *http.Request) {
 
 	// update the coutner
 	signals.Count++
-	// app.infoLog.Println("💁 signals: ", signals)
+	// app.infoLog.Println("📶 signals: ", signals)
 
 	// start a new event
 	sse := datastar.NewSSE(w, r)

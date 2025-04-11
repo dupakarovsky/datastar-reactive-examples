@@ -15,7 +15,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// register the SessionMap type on initilization so the SessionManager can acesse it.
+// register the SessionMap type on initilization so the SessionManager can access it.
 func init() {
 	gob.Register(&data.SessionMap{})
 }
@@ -34,7 +34,7 @@ type config struct {
 	}
 }
 
-// application holds the configuration struct as wall as the logs, database connection poll and the session manager instance.
+// application holds the configuration struct as well as the logs, database connection poll and the session manager instance.
 type application struct {
 	config
 	infoLog        *log.Logger
